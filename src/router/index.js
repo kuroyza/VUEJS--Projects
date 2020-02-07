@@ -4,6 +4,7 @@ import Home from "../views/Home.vue";
 import About from "../views/About.vue";
 import Projects from "../views/Projects.vue";
 import DualListbox from "../views/Projects/DualListbox.vue";
+import Quotes from "../views/Projects/Quotes.vue";
 
 Vue.use(VueRouter);
 
@@ -27,6 +28,11 @@ const routes = [
     path: "/projects/dual-listbox",
     name: "dual-listbox",
     component: DualListbox
+  },
+  {
+    path: "/projects/quotes-maker",
+    name: "quotes-maker",
+    component: Quotes
   }
 ];
 

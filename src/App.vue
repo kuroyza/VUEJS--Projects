@@ -15,6 +15,14 @@
   margin: 0;
 }
 
+body{
+  background-color: rgba(0,77,200,.15);
+}
+
+ul{
+  list-style: none;
+}
+
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
