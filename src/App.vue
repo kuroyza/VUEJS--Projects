@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <a href="#" class="backbtn" @click.prevent="goBack">Back</a>
     <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link> |
@@ -9,6 +10,17 @@
   </div>
 </template>
 
+
+<script>
+export default {
+  methods:{
+    goBack(){
+      window.history.length > 1 ? this.$router.go(-1) : this.$router.push('/');
+    }
+  }
+}
+</script>
+
 <style lang="scss">
 *{
   padding: 0;
@@ -16,7 +28,7 @@
 }
 
 body{
-  background-color: rgba(0,77,200,.15);
+  background-color: rgba(0, 77, 200, .1);
 }
 
 ul{
@@ -33,14 +45,19 @@ ul{
 
 #nav {
   padding: 30px;
+}
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
+a {
+  font-weight: bold;
+  color: #2c3e50;
+  transition: all .3s;
 
-    &.router-link-exact-active {
-      color: #42b983;
-    }
+  &.router-link-exact-active {
+    color: #42b983;
+  }
+
+  &:hover{
+    color: #2c3e50d2;
   }
 }
 </style>

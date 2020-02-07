@@ -38,7 +38,6 @@
    // TODO: Add choosing MAX quotes
    // TODO: Add copy quote to clipboard
    // TODO: Add color picker for quotes background and font
-   // Quote: 
 
    export default{
       data: function(){
@@ -100,12 +99,13 @@
       width: 100%;
       height: 25px;
       box-shadow: inset 0 0 5px rgba(0,0,0,.15);
+      background-color: rgba(66, 185, 131, .3);
       border-radius: 6px;
       overflow: hidden;
 
       &--filled{
          height: 100%;
-         background-color: green;
+         background-color: #42b983;
          text-align: center;
          display: flex;
          justify-content: center;

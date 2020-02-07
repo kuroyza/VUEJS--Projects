@@ -7,17 +7,17 @@
 
             <ul class="listbox">
                
-               <template v-if="genres.length > 0">
+               <template v-if="filteredGenres.length > 0">
                   <li class="listbox--item" 
                      v-for="(genre, index) of filteredGenres" 
                      :key="index"
                      :title="genre"
-                     @click="moveToRight(index, $event)">
+                     @click="moveToRight(genre, $event)">
                      {{genre}}
                   </li>
                </template>
                <template v-else>
-                  <span>No selected genre</span>
+                  <span>No genre selected</span>
                </template>
             </ul>
          </div>
@@ -31,18 +31,18 @@
             <input type="text" placeholder="Search" v-model="keyword2">
 
             <ul class="listbox">
-               <template v-if="choosenGenres.length > 0">
+               <template v-if="filteredChoices.length > 0">
                   <li class="listbox--item" 
                      v-for="(choice, index) of filteredChoices" 
                      :key="index"
                      :title="choice"
-                     @click="moveToLeft(index, $event)">
+                     @click="moveToLeft(choice, $event)">
                      {{choice}}
                   </li>
 
                </template>
                <template v-else>
-                  <span>No selected genre</span>
+                  <span>No genre selected</span>
                </template>
             </ul>
          </div>
@@ -52,6 +52,8 @@
 </template>
 
 <script>
+// TODO: Use component to DRY
+
 export default {
    name: 'dual-listbox',
    data: function(){
@@ -73,10 +75,12 @@ export default {
       }
    },
    methods: {
-      moveToRight(index){
+      moveToRight(value){
+         const index = this.genres.indexOf(value);
          this.choosenGenres.push(this.genres.splice(index,1).join(''));
       },
-      moveToLeft(index){
+      moveToLeft(value){
+         const index = this.choosenGenres.indexOf(value);
          this.genres.push(this.choosenGenres.splice(index,1).join(''));
       },
       moveAllToRight(){
@@ -159,7 +163,4 @@ export default {
       padding: 5px 15px;
       border: 1px solid rgba(0,0,0,.5);
    }
-
-
-
 </style>
