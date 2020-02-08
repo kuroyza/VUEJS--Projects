@@ -14,7 +14,11 @@
             <router-link to="/projects/quotes-maker">
             Quotes Maker
             </router-link>
-
+         </li>
+         <li class="projects__list--item">
+            <router-link to="/projects/card-matching">
+            Card Matching
+            </router-link>
          </li>
          
       </ul>
