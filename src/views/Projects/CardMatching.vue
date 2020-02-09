@@ -5,18 +5,8 @@
       <ul class="card">
          <li 
             class="card__item"
-            v-for="(emoji, i) in emojis" 
-            :key="'a-' + i" 
-            @click.stop="flipCard($event.target.parentNode)">
-
-            <span class="card__item--front"></span>
-            <span class="card__item--back" name="cardBack">{{emoji}}</span>
-         </li>
-         
-         <li 
-            class="card__item"
-            v-for="(emoji, i) in emojis" 
-            :key="'b-' + i" 
+            v-for="(emoji, i) in gameEmojis" 
+            :key="i" 
             @click.stop="flipCard($event.target.parentNode)">
 
             <span class="card__item--front"></span>
@@ -24,11 +14,15 @@
          </li>
 
          <div class="card-bar">
-            <div class="card-bar--inner"  :style="{height: (lifes / max) * 100 + '%'}">{{lifes}}/{{max}}</div>
+            <span class="card-bar--time">{{timeLeftInMinutes}}</span>
+            <div  class="card-bar--inner"  
+                  :style="{height: Math.round(timeLeft / maxTime * 10000) / 100 + '%'}">
+                  {{ Math.round(timeLeft / maxTime * 10000) / 100}}%
+            </div>
          </div>
       </ul>
       
-      <div class="notify" v-if="showNotify">
+      <div class="notify" v-if="showNotification">
          <h2 class="notify--headline">{{msg}}</h2>
          <button class="notify--btn" @click="resetAll">Play again</button>
       </div>
@@ -39,14 +33,14 @@
 <script>
 
 // TODO: Add Game Levels
-
+// (new Date().getTime() - before) / 60 / 60;
 export default {
    data: function(){
       return{
          emojis: [
             "🎈",
             "⏰",
-            "👓",
+            "🧀",
             "🌞",
             "🥎",
             "🧢"
@@ -65,22 +59,41 @@ export default {
             "🥭",
             "🧀",
          ],
+         gameEmojis: [],
          choices: [],
-         counter: 0,
-         max: 7,
-         lifes: 7,
          wait: false,
          msg: '',
-         showNotify: false
+         showNotification: false,
+         counter: 0,
+         maxTime: 2* 60,
+         timeLeft: 2 * 60,
+         mainInterval: null
+      }
+   },
+   computed:{
+      timeLeftInMinutes(){
+         const ans = (Math.round((this.timeLeft / 60  * 100 )) / 100).toString().split('.');
+
+         ans[1] =  ans[1] ? `0.${ans[1]}` : 0;
+
+         const theAns = this.pad(ans[0]) + ':' + this.pad(Math.round(ans[1] * 60));
+
+         console.log({theAns, ans});
+
+         return theAns;
       }
    },
    methods: {
       flipCard(card){
+
+         // Stop Game if all cards answered as correct
          if(card.classList.contains('done')){
             return;
          }
 
-         if(this.counter >= 6 || this.lifes <= 0){
+         // Check if time is out or user answerd all cards correctly  and show msg
+         // NOTE: The correct Number of answers equals length of emojis array
+         if(this.counter >= this.emojis.length || this.timeLeft <= 0){
             this.showMsg();
             return;
          }
@@ -92,18 +105,16 @@ export default {
             this.choices.splice(0);
          }
 
+         // If user chose two cards check them out and empty choices array
          if(this.choices.length >= 2){
             this.choices[0].classList.remove('active');
             this.choices[1].classList.remove('active');
             this.choices.splice(0);
          }
          
-         console.dir(card.innerText);
-         console.log(this.choices);
-
          card.classList.toggle('active');
          this.choices.push(card);
-         console.log(this.choices);
+         // console.log(this.choices);
 
          if(this.choices.length == 2){
             this.checkWinningCard();
@@ -112,10 +123,10 @@ export default {
       checkWinningCard(){
          if(this.choices[0].innerText != this.choices[1].innerText){
             this.wait = true;
-            this.lifes--;
+            this.timeLeft--;
 
+            // empty up the array of choices after 1150ms for good UX
             setTimeout(() => {
-
                if(this.choices.length > 0 && this.wait){
                   this.wait = false;
                   this.choices[0].classList.remove('active');
@@ -129,40 +140,70 @@ export default {
          this.winningCards();
       },
       winningCards(){
-         console.log('before: ', this.choices);
+         // console.log('before: ', this.choices);
 
          if(this.choices.length > 0){
             this.choices[0].classList.add('done');
             this.choices[1].classList.add('done');
+
             this.choices.splice(0);
          }
 
          this.counter++;
 
-         if(this.counter >= 6){  
+         if(this.counter >= this.emojis.length){  
+            clearInterval(this.mainInterval);
             this.showMsg();
          }
 
-         console.log('after: ', this.choices);
+         // console.log('after: ', this.choices);
       },
       resetAll(){
-         this.max = 7;
-         this.lifes = this.max;
-         this.showNotify = false;
+         this.timeLeft = 2 * 60;
+         this.showNotification = false;
          this.msg = '';
+         
+         document.querySelectorAll('.done').forEach(e => {
+            e.classList.remove('active', 'done');
+         });
+
+         clearInterval(this.mainInterval);
+         this.randomPositions();
       },
       showMsg(){
-         this.showNotify = true;
-         if(this.lifes <= 0){
+         this.showNotification = true;
+         if(this.timeLeft <= 0){
             this.msg = 'You LOSE!';
          }else if(this.counter >= this.emojis.length / 2){
             this.msg = 'You WON!';
          }
       },
       randomPositions(){
-         // TODO: Get random from the existing array
-         // this.emojis = [];
-         console.log('I am Random Positions');
+         // Generat new random positions for the array
+
+         this.gameEmojis = [];
+         // console.log('I am Random Positions');
+         const newEmojis = this.emojis.concat(this.emojis);
+
+         while(newEmojis.length > 0){
+            const rand = Math.floor(Math.random() * newEmojis.length);
+            this.gameEmojis.push(newEmojis.splice(rand, 1).join(''));
+         }
+
+         // console.log(this.gameEmojis);
+
+         this.mainInterval = setInterval(() => {
+            this.timeLeft -= 1;
+
+            if(this.timeLeft <= 0){
+               this.timeLeft = 0;
+               clearInterval(this.mainInterval);
+               this.showMsg();
+            }
+         }, 1000);
+      },
+      pad(nmbr){
+         return (nmbr < 10) ? '0' + nmbr.toString() : nmbr.toString();
       }
    },
    beforeMount(){
@@ -171,6 +212,8 @@ export default {
 }
 
 // Choice = 1 DOM obj (to be able to get data + removing active classes + )
+// Add Timing instead of failing progress
+
 </script>
 
 <style lang="scss" scoped>
@@ -239,11 +282,10 @@ export default {
       top: 0;
       transform: translateX(300%);
       height: 100%;
-      width: 50px;
+      width: 60px;
       box-shadow: inset 0 0 5px rgba(0,0,0,.5);
       border-bottom-left-radius: 9px;
       border-bottom-right-radius: 9px;
-      overflow: hidden;
 
       &--inner{
          transition: all .35s;
@@ -256,7 +298,16 @@ export default {
          justify-content: center;
          align-items: center;
          color: #fff;
-         
+         border-bottom-left-radius: 9px;
+         border-bottom-right-radius: 9px;
+      }
+
+      &--time{
+         position: absolute;
+         top: -5px;
+         left: 50%;
+         transform: translate(-50%, -100%);
+         color: red;
       }
    }
 
