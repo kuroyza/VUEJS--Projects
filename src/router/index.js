@@ -6,6 +6,7 @@ import Projects from "../views/Projects.vue";
 import DualListbox from "../views/Projects/DualListbox.vue";
 import Quotes from "../views/Projects/Quotes.vue";
 import CardMatching from "../views/Projects/CardMatching.vue";
+import TicTacToe from "../views/Projects/TicTacToe.vue";
 
 Vue.use(VueRouter);
 
@@ -39,6 +40,11 @@ const routes = [
     path: "/projects/card-matching",
     name: "card-matching",
     component: CardMatching
+  },
+  {
+    path: "/projects/tic-tac-toe",
+    name: "tic-tac-toe",
+    component: TicTacToe
   }
 ];
 

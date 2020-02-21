@@ -20,7 +20,11 @@
             Card Matching
             </router-link>
          </li>
-         
+         <li class="projects__list--item">
+            <router-link to="/projects/tic-tac-toe">
+            Tic Tac Toe
+            </router-link>
+         </li>
       </ul>
    </div>
 </template>
