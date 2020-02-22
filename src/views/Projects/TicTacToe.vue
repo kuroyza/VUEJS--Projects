@@ -6,7 +6,7 @@
       <div class="board">
          
          <div class="board__line" v-for="line in 3" :key="line">
-            <div class="board__line--item" @click="clicked($event)"  v-for="box in 3" :key="line + '.' + box" :data-id="line + '.' + box"></div>
+            <div class="board__line--item" @mouseover="mouseOver($event)" @mouseleave="mouseLeave($event)" @click="clicked($event)"  v-for="box in 3" :key="line + '.' + box" :data-id="line + '.' + box"></div>
          </div>
       </div>
 
@@ -33,47 +33,93 @@ export default {
             ["1.1","2.2","3.3"],
             ["1.3","2.2","3.1"],
          ],
-         winningLinesStr: '',
-         nextPlayer: "X"
+         nextPlayer: "X",
       }
    },
    methods: {
-      clicked(e){
-         // console.log(e.target.dataset.id);
+      mouseOver(e){
          if(e.target.innerText != '') return;
+
+         e.target.innerText = this.nextPlayer;
+      },
+      mouseLeave(e){
+         // TODO: finish this one later
+         if(e.target.classList.contains('active')) return;
+
+         e.target.innerText = "";
+      },
+      clicked(e){
+         
+         if(e.target.classList.contains('active')) return;
 
          // Display value on UI
          e.target.innerText = this.nextPlayer;
+         e.target.classList.add('active');
 
          // Add Value to user array
          this[this.nextPlayer].push(e.target.dataset.id);
 
          // Check winning line
-         console.log(this.X);
 
-         if(this.checkWinner()){
-            console.log('Hello World');
+         if(this.checkWinner(e.target.dataset.id)){
+            if(confirm('Player ' + this.nextPlayer + ' Won!!\nDo you want to play again?')){
+               this.resetAll();
+            }
+            return;
+         }
 
+         if(this.X.length >= 5){
+            if(confirm('Drawn out!\nwould you like to play again?')){
+               this.resetAll();
+            }
             return;
          }
 
          // Switch to next player
          this.nextPlayer = this.nextPlayer == "X" ? "O" : "X";
       },
-      checkWinner(){
+      checkWinner(lastChecked){
          if(this[this.nextPlayer].length < 3){
             return false;
          }
 
-         // winningLinesStr.includes('');
+         // Get all arrays that includes last checked box id
+         const res = this.winningLines.filter(arr => arr.includes(lastChecked));
 
+         if(!res) return false;
 
+         let nmbrRes = 0;
+
+         // Check if all 
+         res.forEach(arr => {
+            if(   this[this.nextPlayer].includes(arr[0]) 
+               && this[this.nextPlayer].includes(arr[1])
+               && this[this.nextPlayer].includes(arr[2])){
+               nmbrRes++;
+            }
+         });
+
+         if(nmbrRes > 0){
+            return true;
+         }
+
+         return false;
+      },
+      resetAll(){
+
+         // get all active (checked) boxes and reset them
+         const checked = document.querySelectorAll('.active');
+         checked.forEach(dom => {
+            dom.innerText = '';
+            dom.classList.remove('active');
+         });
+
+         // Empty X and O's data
+         this.X = [];
+         this.O = [];
+         
+         this.nextPlayer = "X";
       }
-   },
-   beforeMount(){
-      this.winningLines.forEach(line =>{
-         this.winningLinesStr += line.sort().toString() + "|";
-      });
    }
    
 }
@@ -108,12 +154,15 @@ export default {
             align-items: center;
             justify-content: center;
             margin-left: 1px;
-            transition: all .25s;
+            color: rgba(0, 0, 0, 0.2);
+            transition: all .3s;
+            cursor: pointer;
 
-            &:hover{
-               opacity: .75;
+            &.active{
+               color: rgb(0,0,0);
             }
          }
+
       }
    }
 </style>
