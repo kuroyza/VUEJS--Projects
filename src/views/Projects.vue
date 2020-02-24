@@ -25,6 +25,11 @@
             Tic Tac Toe
             </router-link>
          </li>
+         <li class="projects__list--item">
+            <router-link to="/projects/highlighter">
+            Highlighter
+            </router-link>
+         </li>
       </ul>
    </div>
 </template>
