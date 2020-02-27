@@ -8,6 +8,7 @@ import Quotes from "../views/Projects/Quotes.vue";
 import CardMatching from "../views/Projects/CardMatching.vue";
 import TicTacToe from "../views/Projects/TicTacToe.vue";
 import Highlighter from "../views/Projects/Highlighter.vue";
+import SnakeGame from "../views/Projects/SnakeGame.vue";
 
 Vue.use(VueRouter);
 
@@ -51,6 +52,11 @@ const routes = [
     path: "/projects/highlighter",
     name: "highlighter",
     component: Highlighter
+  },
+  {
+    path: "/projects/snake-game",
+    name: "snake-game",
+    component: SnakeGame
   }
 ];
 
